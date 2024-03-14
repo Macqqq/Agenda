@@ -26,32 +26,70 @@ using System.Windows;
             private AgendaMbContext _context;
 
             public ContactModificationWindow(Contact contact, AgendaMbContext context)
-            {
-                InitializeComponent();
-                _contact = contact;
-                _context = context;
-                TB_Name.Text = contact.Name;
-                FirstNameTextBox.Text = contact.FirstName;
-                EmailTextBox.Text = contact.Email;
-                PhoneTextBox.Text = contact.Phone;
-            }
+        {
+            InitializeComponent();
+            _contact = contact;
+            _context = context;
+            TB_Name.Text = contact.Name;
+            FirstNameTextBox.Text = contact.FirstName;
+            EmailTextBox.Text = contact.Email;
+            PhoneTextBox.Text = contact.Phone;
+            PostalCodeTextBox.Text = contact.CodePostal;
+            CityTextBox.Text = contact.Ville;
+            BirthDateTextBox.Text = contact.DateOfBirth;
+        }
 
-            private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            var contactToUpdate = _context.Contactstables.Find(_contact.Id);
+            if (contactToUpdate != null)
             {
-                //// Mettre à jour l'objet contact et la base de données
-                var contactToUpdate = _context.Contactstables.Find(_contact.Id);
-                if (contactToUpdate != null)
+                contactToUpdate.Name = TB_Name.Text;
+                contactToUpdate.Prenom = FirstNameTextBox.Text;
+                contactToUpdate.Email = EmailTextBox.Text;
+
+                // Conversion sécurisée du code postal en int?.
+                if (int.TryParse(PostalCodeTextBox.Text, out var postalCodeResult))
                 {
-                    contactToUpdate.Name = TB_Name.Text;
-                    contactToUpdate.Prenom = FirstNameTextBox.Text;
-                    contactToUpdate.Email = EmailTextBox.Text;
-                    contactToUpdate.Phone = Convert.ToInt32(PhoneTextBox.Text);
-                    _context.SaveChanges();
-                    this.Close();
+                    contactToUpdate.CodePostal = postalCodeResult;
                 }
-            }
+                else if (string.IsNullOrEmpty(PostalCodeTextBox.Text))
+                {
+                    contactToUpdate.CodePostal = null; // Assigner null si le champ est vide.
+                }
+                else
+                {
+                    MessageBox.Show("Le code postal doit être un nombre entier.");
+                    return;
+                }
 
-            private void CancelButton_Click(object sender, RoutedEventArgs e)
+                contactToUpdate.Ville = CityTextBox.Text;
+
+                // Conversion sécurisée de la date de naissance en DateOnly?.
+                if (DateOnly.TryParse(BirthDateTextBox.Text, out var dateOfBirthResult))
+                {
+                    contactToUpdate.DateOfBirth = dateOfBirthResult;
+                }
+                else if (string.IsNullOrEmpty(BirthDateTextBox.Text))
+                {
+                    contactToUpdate.DateOfBirth = null; // Assigner null si le champ est vide.
+                }
+                else
+                {
+                    MessageBox.Show("La date de naissance doit être dans un format valide (JJ/MM/AAAA).");
+                    return;
+                }
+
+                _context.SaveChanges();
+                MessageBox.Show("Le contact a été modifié avec succès.");
+                this.Close();
+            }
+            else
+            {
+                MessageBox.Show("Le contact sélectionné est introuvable dans la base de données.");
+            }
+        }
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
             {
                 this.Close();
             }

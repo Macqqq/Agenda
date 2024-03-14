@@ -34,7 +34,7 @@ namespace POIRE.Dao
             }
             else
             {
-                // Gérer l'erreur ou logguer que l'ID existe déjà
+                // Gérer l'erreur ou logguer que l'ID existe gfgnhub
             }
         }
 

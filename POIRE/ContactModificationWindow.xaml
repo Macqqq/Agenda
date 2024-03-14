@@ -15,6 +15,9 @@
             <TextBox x:Name="FirstNameTextBox" Margin="5" />
             <TextBox x:Name="EmailTextBox" Margin="5" />
             <TextBox x:Name="PhoneTextBox" Margin="5" />
+            <TextBox x:Name="PostalCodeTextBox" Margin="5" />
+            <TextBox x:Name="CityTextBox" Margin="5" />
+            <TextBox x:Name="BirthDateTextBox" Margin="5" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
